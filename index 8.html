@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OVER STORE | NEXUS ELITE 2026</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Inter:wght@300;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* =========================================
+           VARIÁVEIS
+           ========================================= */
+        :root {
+            --accent: #bc13fe;
+            --secondary: #00f2ff;
+            --bg: #030305;
+            --surface: rgba(15, 15, 20, 0.65);
+            --glass: rgba(10, 10, 15, 0.85);
+            --danger: #ff0055;
+            --sidebar-w: 300px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body { background: var(--bg); color: #fff; height: 100vh; overflow: hidden; position: relative; }
+
+        /* =========================================
+           FUNDO ANIMADO E CHAMATIVO
+           ========================================= */
+        .cyber-grid { 
+            position: fixed; inset: 0; z-index: -3;
+            background-size: 50px 50px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px), 
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        }
+
+        .glow-orb { position: fixed; border-radius: 50%; filter: blur(100px); opacity: 0.35; z-index: -2; animation: floatOrb 12s infinite alternate ease-in-out; pointer-events: none; }
+        .orb-1 { width: 500px; height: 500px; background: var(--accent); top: -150px; left: 15%; }
+        .orb-2 { width: 400px; height: 400px; background: var(--secondary); bottom: -100px; right: 10%; animation-delay: -6s; }
+
+        @keyframes floatOrb { 100% { transform: translateY(60px) translateX(30px) scale(1.1); } }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+        /* Loader */
+        #loader { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.8s ease, visibility 0.8s; }
+        .shimmer { font-family: 'Orbitron'; font-size: 1.2rem; color: var(--accent); letter-spacing: 5px; animation: blink 1s infinite; text-shadow: 0 0 20px var(--accent); }
+
+        /* =========================================
+           SIDEBAR E MENUS
+           ========================================= */
+        .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 999; opacity: 0; visibility: hidden; transition: 0.3s ease; backdrop-filter: blur(5px); }
+        .sidebar-overlay.active { opacity: 1; visibility: visible; }
+
+        .sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: var(--sidebar-w); background: var(--glass); backdrop-filter: blur(40px); border-right: 1px solid rgba(255,255,255,0.05); z-index: 1000; padding: 30px 20px; display: flex; flex-direction: column; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; box-shadow: 5px 0 30px rgba(0,0,0,0.5); }
+        .brand { font-family: 'Orbitron'; font-weight: 900; font-size: 1.8rem; color: var(--secondary); margin-bottom: 25px; text-shadow: 0 0 20px var(--secondary); text-align: center; flex-shrink: 0; letter-spacing: 2px; }
+
+        .sidebar-divider { font-size: 0.65rem; color: #666; font-weight: 900; letter-spacing: 2px; margin: 15px 0 10px 10px; }
+        a.nav-item { text-decoration: none; }
+        .nav-item { padding: 15px 20px; margin-bottom: 10px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; gap: 15px; transition: 0.3s; color: #999; font-weight: 800; font-size: 0.85rem; border: 1px solid transparent; }
+        .nav-item:hover, .nav-item.active { background: rgba(188, 19, 254, 0.15); color: #fff; border-color: rgba(188, 19, 254, 0.4); box-shadow: 0 0 25px rgba(188, 19, 254, 0.2); }
+
+        .nav-support { border: 1px dashed var(--secondary); color: var(--secondary); margin-top: 5px; }
+        .nav-support:hover { background: rgba(0, 242, 255, 0.15); box-shadow: 0 0 20px rgba(0, 242, 255, 0.3); color: #fff; border-color: transparent; }
+
+        .creator-link { background: linear-gradient(90deg, #ff0055, var(--accent)); color: #fff; box-shadow: 0 5px 20px rgba(255, 0, 85, 0.4); border: none; text-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+        .creator-link:hover { background: linear-gradient(90deg, var(--accent), #ff0055); box-shadow: 0 8px 30px rgba(188, 19, 254, 0.6); transform: translateY(-2px); color: #fff; }
+
+        /* =========================================
+           ÁREA PRINCIPAL E TOPO FIXO (CORRIGIDO)
+           ========================================= */
+        /* A view principal agora não rola a página inteira, ela gerencia sua própria barra de rolagem abaixo do header */
+        .main-view { margin-left: var(--sidebar-w); height: 100vh; display: flex; flex-direction: column; }
+
+        /* O Topo Fixo que NUNCA atrapalha os cards */
+        .sticky-top { 
+            padding: 40px 60px 10px; 
+            background: var(--bg); /* Fundo sólido em vez de transparente */
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            z-index: 50;
+            flex-shrink: 0; /* Impede que ele seja esmagado */
+        }
+
+        .search-bar { width: 100%; max-width: 500px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 18px 25px; border-radius: 50px; color: #fff; margin-bottom: 25px; outline: none; transition: 0.3s; font-size: 0.95rem; box-shadow: inset 0 2px 10px rgba(0,0,0,0.5); }
+        .search-bar:focus { border-color: var(--secondary); box-shadow: 0 0 20px rgba(0, 242, 255, 0.3), inset 0 2px 10px rgba(0,0,0,0.5); background: rgba(0,0,0,0.8); }
+
+        .header h1 { font-family: 'Orbitron'; font-size: 2.8rem; text-shadow: 0 5px 15px rgba(0,0,0,0.5); margin: 0; }
+        .header span { color: var(--accent); text-shadow: 0 0 20px var(--accent); }
+
+        /* A área que realmente rola (onde os cards ficam) */
+        .scrollable-content {
+            padding: 30px 60px 40px;
+            overflow-y: auto;
+            flex-grow: 1; /* Ocupa o restante do espaço */
+            scroll-behavior: smooth;
+        }
+
+        /* =========================================
+           GRIDS E CARDS SUPER CHAMATIVOS
+           ========================================= */
+        .grid { display: none; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 30px; }
+        .grid.active { display: grid; animation: fadeInUp 0.5s ease forwards; }
+
+        .nexus-card { 
+            background: var(--surface); backdrop-filter: blur(20px); 
+            border: 1px solid rgba(255, 255, 255, 0.08); border-top: 1px solid rgba(255, 255, 255, 0.2); 
+            border-radius: 24px; padding: 30px; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            position: relative; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+        }
+
+        .nexus-card:hover { 
+            transform: translateY(-12px) scale(1.03); 
+            border-color: var(--accent); 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6), 0 0 30px rgba(188, 19, 254, 0.3), inset 0 0 20px rgba(188, 19, 254, 0.1); 
+        }
+
+        .card-tag { position: absolute; top: 20px; right: 20px; font-size: 0.65rem; font-weight: 900; color: var(--accent); letter-spacing: 2px; background: rgba(188, 19, 254, 0.1); padding: 4px 10px; border-radius: 8px; }
+
+        .icon-box { font-size: 2.5rem; color: var(--secondary); margin-bottom: 20px; text-shadow: 0 0 15px var(--secondary); transition: 0.3s; display: inline-block; }
+        .nexus-card:hover .icon-box { transform: scale(1.1) rotate(5deg); }
+
+        .card-title { font-family: 'Orbitron'; font-size: 1.2rem; margin-bottom: 5px; color: #fff; }
+        .card-subtitle { font-size: 0.75rem; color: #00f2ff; margin-bottom: 20px; display: block; text-transform: uppercase; font-weight: 600; letter-spacing: 1px;}
+
+        .btn-reveal { width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); color: #888; border-radius: 12px; cursor: pointer; font-size: 0.7rem; font-weight: 800; margin-bottom: 15px; transition: 0.3s; }
+        .btn-reveal:hover { border-color: var(--secondary); color: var(--secondary); background: rgba(0, 242, 255, 0.05); }
+
+        .btn-sync { display: block; width: 100%; padding: 16px; background: linear-gradient(90deg, var(--accent), #7000ff); color: #fff; text-decoration: none; border-radius: 14px; text-align: center; font-weight: 900; font-size: 0.8rem; transition: 0.3s; box-shadow: 0 5px 15px rgba(188, 19, 254, 0.3); letter-spacing: 1px; }
+        .btn-sync:hover { filter: brightness(1.2); transform: translateY(-2px); box-shadow: 0 10px 25px rgba(188, 19, 254, 0.6); }
+
+        .specs { max-height: 0; overflow: hidden; transition: 0.5s cubic-bezier(0, 1, 0, 1); background: rgba(0,0,0,0.5); border-radius: 12px; margin-bottom: 0; opacity: 0; }
+        .specs.open { max-height: 200px; padding: 15px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05); opacity: 1; transition: 0.5s ease-in; }
+        .specs p { font-size: 0.8rem; color: #ccc; line-height: 1.6; }
+
+        /* Notificações */
+        #toast-container { position: fixed; bottom: 30px; right: 30px; z-index: 9999; pointer-events: none; }
+        .toast { background: rgba(10, 10, 15, 0.95); backdrop-filter: blur(10px); border-left: 4px solid var(--secondary); padding: 18px 25px; color: #fff; border-radius: 10px; box-shadow: 0 15px 35px rgba(0,0,0,0.6); animation: slideIn 0.3s ease forwards; display: flex; align-items: center; gap: 12px; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); border-right: 1px solid rgba(255,255,255,0.05); }
+
+        /* Menu Mobile */
+        .menu-toggle { position: fixed; top: 20px; left: 20px; width: 55px; height: 55px; background: rgba(188, 19, 254, 0.2); backdrop-filter: blur(10px); border: 1px solid rgba(188, 19, 254, 0.5); border-radius: 15px; color: white; z-index: 2000; cursor: pointer; display: none; font-size: 1.3rem; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+
+        @media (max-width: 1024px) { 
+            .sidebar { transform: translateX(-100%); } 
+            .sidebar.active { transform: translateX(0); } 
+            .main-view { margin-left: 0; }
+            .sticky-top { padding: 90px 20px 20px; }
+            .scrollable-content { padding: 20px 20px 40px; }
+            .header h1 { font-size: 2rem; } 
+            .menu-toggle { display: block; } 
+        }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes blink { 0%, 100% { opacity: 1; text-shadow: 0 0 20px var(--accent); } 50% { opacity: 0.5; text-shadow: none; } }
+    </style>
+</head>
+<body>
+
+    <div class="cyber-grid"></div>
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+
+    <div id="loader"><div class="shimmer">INITIALIZING NEXUS ELITE...</div></div>
+    <div id="toast-container"></div>
+    <div class="sidebar-overlay" id="overlay"></div>
+    <button class="menu-toggle" id="btn-menu"><i class="fa-solid fa-bars-staggered"></i></button>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="brand">OVER STORE</div>
+        <nav id="nav-menu">
+
+            <div class="sidebar-divider">SISTEMA</div>
+            <div class="nav-item tab-link active" data-target="tab-stickers"><i class="fa-solid fa-layer-group"></i> NEXUS STICKERS</div>
+            <div class="nav-item tab-link" data-target="tab-premium"><i class="fa-solid fa-crown"></i> ELITE PREMIUM</div>
+            <div class="nav-item tab-link" data-target="tab-forbidden"><i class="fa-solid fa-biohazard"></i> FORBIDDEN DATA</div>
+
+            <div class="sidebar-divider">COMUNIDADE</div>
+            <a href="https://discord.gg/eRxkKbXjRs" target="_blank" class="nav-item"><i class="fa-brands fa-discord" style="color: #5865F2;"></i> DISCORD SERVER</a>
+            <a href="https://whatsapp.com/channel/0029VbBhPCNKmCPQaqRICj3v" target="_blank" class="nav-item"><i class="fa-brands fa-whatsapp" style="color: #25D366;"></i> WHATSAPP CANAL</a>
+            <a href="https://t.me/OverBan07" target="_blank" class="nav-item"><i class="fa-brands fa-telegram" style="color: #0088cc;"></i> TELEGRAM CANAL</a>
+
+            <div class="sidebar-divider">SUPORTE & INFO</div>
+            <div class="nav-item nav-support" id="btn-support"><i class="fa-solid fa-headset"></i> CENTRAL DE SUPORTE</div>
+            <a href="https://t.me/ApelaWar71" target="_blank" class="nav-item creator-link"><i class="fa-solid fa-user-ninja"></i> CRIADOR: @ApelaWar71</a>
+
+        </nav>
+        <div style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 20px; text-align: center;">
+            <p style="font-size: 0.6rem; color: #555;">VERSION: 7.0.0</p>
+            <p style="font-size: 0.65rem; color: var(--accent); font-weight: 900; letter-spacing: 1px; margin-top: 5px;">SECURITY: ENCRYPTED</p>
+        </div>
+    </aside>
+
+    <main class="main-view">
+
+        <div class="sticky-top">
+            <input type="text" class="search-bar" id="search-input" placeholder="Pesquisar protocolo por nome ou tipo...">
+            <div class="header">
+                <h1 id="view-title">NEXUS <span>STICKERS</span></h1>
+            </div>
+        </div>
+
+        <div class="scrollable-content">
+
+            <div id="tab-stickers" class="grid active">
+                <div class="nexus-card"><span class="card-tag">LEGACY</span><div class="icon-box"><i class="fa-solid fa-omnitrix"></i></div><h3 class="card-title">PROJECT: OMNITRIX</h3><span class="card-subtitle">Protocolo Genesis</span><button class="btn-reveal">DETALHES</button><div class="specs"><p>O artefato lendário do Ben 10. Otimizado para alta performance em grupos pesados.</p></div><a href="https://t.me/addstickers/OverBan07OMINITRIX" target="_blank" class="btn-sync">SINCRONIZAR</a></div>
+                <div class="nexus-card"><span class="card-tag">DIVINE</span><div class="icon-box"><i class="fa-solid fa-crown"></i></div><h3 class="card-title">AURA ULTIMATE</h3><span class="card-subtitle">Status Supremo</span><button class="btn-reveal">DETALHES</button><div class="specs"><p>A elite da OverStore. Demonstre autoridade absoluta em qualquer discussão no Telegram.</p></div><a href="https://t.me/addstickers/UltimateStickersOverBan07" target="_blank" class="btn-sync">SINCRONIZAR</a></div>
+                <div class="nexus-card"><span class="card-tag">KINETIC</span><div class="icon-box"><i class="fa-solid fa-bolt-lightning"></i></div><h3 class="card-title">HYPER GIFS</h3><span class="card-subtitle">Engine Animada</span><button class="btn-reveal">DETALHES</button><div class="specs"><p>Ataques visuais e reações dinâmicas. Figurinhas animadas com alta taxa de quadros (FPS).</p></div><a href="https://t.me/addstickers/OverBan07PACKGIF" target="_blank" class="btn-sync">SINCRONIZAR</a></div>
+                <div class="nexus-card"><span class="card-tag">CORE</span><div class="icon-box"><i class="fa-solid fa-shield-halved"></i></div><h3 class="card-title">OVERBAN ROOT</h3><span class="card-subtitle">Registro Oficial</span><button class="btn-reveal">DETALHES</button><div class="specs"><p>A identidade original. Uso obrigatório para membros leais e moderadores do canal.</p></div><a href="https://t.me/addstickers/OVERBAN" target="_blank" class="btn-sync">SINCRONIZAR</a></div>
+                <div class="nexus-card"><span class="card-tag">ADMIN</span><div class="icon-box"><i class="fa-solid fa-shop"></i></div><h3 class="card-title">STORE TERMINAL</h3><span class="card-subtitle">Módulo de Vendas</span><button class="btn-reveal">DETALHES</button><div class="specs"><p>Pacote focado em interações da nossa lojinha virtual. Essencial para clientes VIP.</p></div><a href="https://t.me/addstickers/OverBan07MelhorLojinha" target="_blank" class="btn-sync">SINCRONIZAR</a></div>
+                <div class="nexus-card"><span class="card-tag">STRIKE</span><div class="icon-box"><i class="fa-solid fa-fire-burner"></i></div><h3 class="card-title">APELAWAR ALPHA</h3><span class="card-subtitle">Módulo de Guerra</span><button class="btn-reveal">DETALHES</button><div class="specs"><p>A primeira geração de armas de discussão. Feito para calar os oponentes rapidamente.</p></div><a href="https://t.me/addstickers/ApelaWar71OverBan07" target="_blank" class="btn-sync">SINCRONIZAR</a></div>
+                <div class="nexus-card"><span class="card-tag">STRIKE V2</span><div class="icon-box"><i class="fa-solid fa-gun"></i></div><h3 class="card-title">APELAWAR OMEGA</h3><span class="card-subtitle">Módulo de Guerra Refinado</span><button class="btn-reveal">DETALHES</button><div class="specs"><p>A evolução do combate. Textos e imagens calibradas para dano crítico em debates chatos.</p></div><a href="https://t.me/addstickers/ApelaWar71OverBan072" target="_blank" class="btn-sync">SINCRONIZAR</a></div>
+                <div class="nexus-card"><span class="card-tag">PET</span><div class="icon-box"><i class="fa-solid fa-cat"></i></div><h3 class="card-title">OVER ESSENCE</h3><span class="card-subtitle">Fofura Cibernética</span><button class="btn-reveal">DETALHES</button><div class="specs"><p>Desarme inimigos com o pack exclusivo da Milly. Uso estratégico de gatilhos fofos.</p></div><a href="https://t.me/addstickers/Apelawar71DaMilly" target="_blank" class="btn-sync">SINCRONIZAR</a></div>
+                <div class="nexus-card"><span class="card-tag">SOCIAL</span><div class="icon-box"><i class="fa-solid fa-heart-crack"></i></div><h3 class="card-title">HEARTBREAK ECHO</h3><span class="card-subtitle">Drama & Ilusão</span><button class="btn-reveal">DETALHES</button><div class="specs"><p>Para quando as coisas dão errado. Pacote emocional tático para o servidor.</p></div><a href="https://t.me/addstickers/ILUDIRAMOverBan07" target="_blank" class="btn-sync">SINCRONIZAR</a></div>
+                <div class="nexus-card"><span class="card-tag">SYSTEM</span><div class="icon-box"><i class="fa-solid fa-robot"></i></div><h3 class="card-title">BOT AVATAR</h3><span class="card-subtitle">Automação Visual</span><button class="btn-reveal">DETALHES</button><div class="specs"><p>Respostas e interações padronizadas pelo nosso bot de atendimento OverStore.</p></div><a href="https://t.me/addstickers/OverStore71Bot" target="_blank" class="btn-sync">SINCRONIZAR</a></div>
+                <div class="nexus-card"><span class="card-tag">CASUAL</span><div class="icon-box"><i class="fa-solid fa-face-laugh-squint"></i></div><h3 class="card-title">OVER SHITPOST</h3><span class="card-subtitle">Uso Diário</span><button class="btn-reveal">DETALHES</button><div class="specs"><p>Arsenais leves para manter o chat vivo e com humor distorcido de alta qualidade.</p></div><a href="https://t.me/addstickers/OverBan07Stickers" target="_blank" class="btn-sync">SINCRONIZAR</a></div>
+            </div>
+
+            <div id="tab-premium" class="grid">
+                <div class="nexus-card" style="border-color: gold; box-shadow: 0 15px 35px rgba(255, 215, 0, 0.05);"><span class="card-tag" style="color: gold; background: rgba(255,215,0,0.1);">ELITE</span><div class="icon-box"><i class="fa-solid fa-gem" style="color: gold;"></i></div><h3 class="card-title">SUPREME SIGILS</h3><span class="card-subtitle">Emojis Premium</span><button class="btn-reveal">DETALHES</button><div class="specs"><p>Emojis dinâmicos e exclusivos para assinantes Telegram Premium. Mude sua forma de reagir.</p></div><a href="https://t.me/addemoji/t_me_OverBan07_by_fStikBot" target="_blank" class="btn-sync" style="background: linear-gradient(90deg, #d4af37, #ffd700); color: #000; box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);">DESBLOQUEAR SIGILOS</a></div>
+                <div class="nexus-card" style="border-color: gold; box-shadow: 0 15px 35px rgba(255, 215, 0, 0.05);"><span class="card-tag" style="color: gold; background: rgba(255,215,0,0.1);">V.I.P</span><div class="icon-box"><i class="fa-solid fa-crown" style="color: gold;"></i></div><h3 class="card-title">WARLORD GLYPHS</h3><span class="card-subtitle">ApelaWar Creators</span><button class="btn-reveal">DETALHES</button><div class="specs"><p>O selo dos criadores. Adicione a coroa de líder aos seus status no Telegram.</p></div><a href="https://t.me/addemoji/CRIADOR_t_me_ApelaWar71_by_fStikBot" target="_blank" class="btn-sync" style="background: linear-gradient(90deg, #d4af37, #ffd700); color: #000; box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);">DESBLOQUEAR GLIFOS</a></div>
+            </div>
+
+            <div id="tab-forbidden" class="grid">
+                <div class="nexus-card" style="border-color: var(--danger); box-shadow: 0 15px 35px rgba(255, 0, 85, 0.05);"><span class="card-tag" style="color: var(--danger); background: rgba(255,0,85,0.1);">RESTRICTED</span><div class="icon-box"><i class="fa-solid fa-pepper-hot" style="color: var(--danger);"></i></div><h3 class="card-title">PROJECT: LUST 223</h3><span class="card-subtitle">Hentai Data Vault</span><button class="btn-reveal">DETALHES</button><div class="specs"><p>Acesso bloqueado para menores de 18 anos. Criptografia violada com sucesso.</p></div><a href="https://t.me/addstickers/HENTAI_223" target="_blank" class="btn-sync" style="background: linear-gradient(90deg, #cc0044, var(--danger)); box-shadow: 0 5px 15px rgba(255, 0, 85, 0.3);">DECRIFRAR DADOS (+18)</a></div>
+                <div class="nexus-card" style="border-color: var(--danger); box-shadow: 0 15px 35px rgba(255, 0, 85, 0.05);"><span class="card-tag" style="color: var(--danger); background: rgba(255,0,85,0.1);">RESTRICTED</span><div class="icon-box"><i class="fa-solid fa-fire" style="color: var(--danger);"></i></div><h3 class="card-title">DARK ARCHIVES 189</h3><span class="card-subtitle">Adult Content</span><button class="btn-reveal">DETALHES</button><div class="specs"><p>Arquivo confidencial recuperado do servidor. Manusear com discrição absoluta.</p></div><a href="https://t.me/addstickers/HENTAIS189" target="_blank" class="btn-sync" style="background: linear-gradient(90deg, #cc0044, var(--danger)); box-shadow: 0 5px 15px rgba(255, 0, 85, 0.3);">DECRIFRAR DADOS (+18)</a></div>
+            </div>
+
+        </div> </main>
+
+    <script type="text/javascript">
+        window.$crisp = [];
+        window.CRISP_WEBSITE_ID = "295fed7e-7aff-4d4c-b069-8cc7f4e52769";
+        window.$crisp.push(["config", "color:theme", ["purple"]]); 
+        (function() {
+            var d = document;
+            var s = d.createElement("script");
+            s.src = "https://client.crisp.chat/l.js";
+            s.async = 1;
+            d.getElementsByTagName("head")[0].appendChild(s);
+        })();
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => { 
+                const loader = document.getElementById('loader');
+                loader.style.opacity = '0'; 
+                setTimeout(() => loader.style.display = 'none', 800);
+            }, 1000);
+
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            const btnMenu = document.getElementById('btn-menu');
+            const toggle = () => { sidebar.classList.toggle('active'); overlay.classList.toggle('active'); };
+            btnMenu.onclick = toggle;
+            overlay.onclick = toggle;
+
+            const navTabs = document.querySelectorAll('.tab-link'); 
+            const grids = document.querySelectorAll('.grid');
+            const viewTitle = document.getElementById('view-title');
+            const scrollArea = document.querySelector('.scrollable-content');
+
+            const titles = { 
+                'tab-stickers': 'NEXUS <span>STICKERS</span>', 
+                'tab-premium': 'ELITE <span>PREMIUM</span>', 
+                'tab-forbidden': 'FORBIDDEN <span>DATA</span>' 
+            };
+
+            navTabs.forEach(item => {
+                item.onclick = function() {
+                    navTabs.forEach(i => i.classList.remove('active'));
+                    grids.forEach(g => g.classList.remove('active'));
+                    this.classList.add('active');
+                    const target = this.getAttribute('data-target');
+                    document.getElementById(target).classList.add('active');
+                    viewTitle.innerHTML = titles[target];
+                    if(window.innerWidth <= 1024) toggle();
+
+                    // Reseta a rolagem da área dos cards
+                    scrollArea.scrollTo({ top: 0, behavior: 'smooth' });
+                };
+            });
+
+            document.getElementById('btn-support').addEventListener('click', function() {
+                $crisp.push(['do', 'chat:open']);
+                if(window.innerWidth <= 1024) toggle(); 
+            });
+
+            document.getElementById('search-input').oninput = function() {
+                const val = this.value.toLowerCase();
+                document.querySelectorAll('.nexus-card').forEach(card => {
+                    const text = card.innerText.toLowerCase();
+                    card.style.display = text.includes(val) ? 'block' : 'none';
+                });
+            };
+
+            document.querySelectorAll('.btn-reveal').forEach(btn => {
+                btn.onclick = function() {
+                    const s = this.nextElementSibling;
+                    s.classList.toggle('open');
+                    this.innerText = s.classList.contains('open') ? "OCULTAR" : "DETALHES";
+                };
+            });
+
+            document.querySelectorAll('.btn-sync').forEach(btn => {
+                btn.onclick = () => {
+                    const t = document.createElement('div');
+                    t.className = 'toast';
+                    t.innerHTML = `<i class="fa-solid fa-satellite-dish" style="color: var(--secondary); font-size: 1.2rem;"></i> <span style="font-weight: 800;">Conectando Protocolo...</span>`;
+                    document.getElementById('toast-container').appendChild(t);
+                    setTimeout(() => {
+                        t.style.animation = 'slideIn 0.3s ease reverse forwards';
+                        setTimeout(() => t.remove(), 300);
+                    }, 2500);
+                };
+            });
+        });
+    </script>
+</body>
+</html>
